@@ -22,7 +22,14 @@ jobs:
       - name: Check the tag matches package.json
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
       - run: npm run check
-      - run: npm publish --provenance --access public
+      - name: Publish to npm
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "picomcp@$version" version >/dev/null 2>&1; then
+            echo "picomcp@$version is already on npm, skipping."
+          else
+            npm publish --provenance --access public
+          fi
       - run: npx jsr publish
       - name: GitHub release
         env:
