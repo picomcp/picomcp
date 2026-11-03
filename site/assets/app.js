@@ -2,7 +2,7 @@
 import { createIndex, excerpt, search } from "./search.js";
 
 const BASE = document.documentElement.dataset.base ?? "/";
-const SEARCH_INDEX = document.documentElement.dataset.search ?? `${BASE}search.json`;
+const SEARCH_INDEX = document.documentElement.dataset.searchIndex ?? `${BASE}search.json`;
 /** Interface strings for the page's language, written by the site generator. */
 const T = (() => {
   const fallback = { loading: "Loading…", noResults: "No results for “{q}”.", tryOther: "Try fewer or different words.", pages: "Pages", copied: "Copied", pressCopy: "Press ⌘C" };
@@ -169,7 +169,7 @@ function close() {
   if (opener instanceof HTMLElement) opener.focus();
 }
 
-document.querySelectorAll("[data-search]").forEach((el) => el.addEventListener("click", open));
+document.querySelectorAll("button[data-search]").forEach((el) => el.addEventListener("click", open));
 palette?.addEventListener("click", (event) => {
   if (event.target instanceof Element && event.target.hasAttribute("data-close")) close();
 });

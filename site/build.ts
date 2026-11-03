@@ -199,7 +199,7 @@ function head(lang: Lang, t: Strings, title: string, description: string, path: 
   const fonts = ["family=Archivo:wdth,wght@62..125,300..900", "family=JetBrains+Mono:wght@400;500;600", lang.fonts].filter(Boolean).join("&");
   const client = { loading: t.loading, noResults: t.noResults, tryOther: t.tryOther, pages: t.pages, copied: t.copied, pressCopy: t.pressCopy };
   return `<!doctype html>
-<html lang="${lang.hreflang}" data-base="${BASE}" data-search="${BASE}${prefix(lang)}search.json">
+<html lang="${lang.hreflang}" data-base="${BASE}" data-search-index="${BASE}${prefix(lang)}search.json">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

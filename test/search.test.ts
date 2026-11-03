@@ -69,6 +69,15 @@ describe("search", () => {
     expect(excerpt("用 schema 校验输入参数", new Set(["校验"]))).toBe("用 schema <mark>校验</mark>输入参数");
   });
 
+  it("only lets buttons open the search palette", () => {
+    // Regression: a data-search attribute on <html> once made every click open the palette.
+    for (const page of ["site/dist/index.html", "site/dist/fr/docs/tools.html"]) {
+      const tags = readFileSync(page, "utf8").match(/<[a-z]+[^>]*\sdata-search[\s=>][^>]*>/g) ?? [];
+      expect(tags.length).toBeGreaterThan(0);
+      for (const tag of tags) expect(tag.startsWith("<button"), tag).toBe(true);
+    }
+  });
+
   it("highlights matched words in excerpts and escapes HTML", () => {
     expect(excerpt("Use <b>tools</b> wisely", new Set(["tools"]))).toBe("Use &#60;b&#62;<mark>tools</mark>&#60;/b&#62; wisely");
   });

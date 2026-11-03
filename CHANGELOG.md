@@ -4,10 +4,12 @@ All notable changes to picomcp are documented here. The format follows [Keep a C
 
 ## Unreleased
 
-## 0.1.1
+## 0.1.2
 
-No library changes: this release ships documentation.
+No library changes: this release ships documentation. It replaces 0.1.1, which was tagged but never published because its release run failed.
 
+- Fix: clicking anywhere on the docs site no longer opens the search palette.
+- Fix: tests no longer build the docs site twice in parallel, which made the release run fail.
 - Docs and README in 8 languages: English, French, German, Italian, Spanish, Russian, Simplified Chinese and Japanese. Every translated page keeps the English code samples, checked in CI.
 - Docs search handles every script: accents, Cyrillic, and Chinese and Japanese text without spaces.
 - Language menu, `hreflang` links, `sitemap.xml` and a `llms-full.txt` per language.

@@ -1,23 +1,32 @@
-/** The picomcp-docs package: parsing and ranking over the real llms-full.txt. */
-import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { beforeAll, describe, expect, it } from "vitest";
-import { find, parse, search, type Page } from "../packages/docs/src/docs.ts";
+/**
+ * The picomcp-docs package: parsing and ranking over the real English docs.
+ * The llms-full.txt text is assembled in memory from site/docs, in the same shape the site generator writes,
+ * so this test never builds the site: search.test.ts does, and two parallel builds race on site/dist.
+ */
+import { readdirSync, readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { find, parse, search } from "../packages/docs/src/docs.ts";
 
 const SITE = "https://picomcp.github.io/picomcp";
-let pages: Page[];
 
-beforeAll(() => {
-  execFileSync(process.execPath, ["site/build.ts"], { stdio: "ignore", env: { ...process.env, SITE_URL: SITE } });
-  pages = parse(readFileSync("site/dist/llms-full.txt", "utf8"), SITE);
-}, 30_000);
+const llmsFull = readdirSync("site/docs")
+  .filter((file) => file.endsWith(".md"))
+  .map((file) => {
+    const source = readFileSync(`site/docs/${file}`, "utf8");
+    const title = source.match(/^title:\s*(.+)$/m)?.[1]?.trim() ?? file;
+    const body = source.replace(/^---\n[\s\S]*?\n---\n+/, "").replace(/^# .+\n+/, "");
+    return `# ${title}\nSource: ${SITE}/docs/${file.replace(/\.md$/, "")}\n\n${body}\n`;
+  })
+  .join("\n---\n\n");
+
+const pages = parse(llmsFull, SITE);
 
 describe("picomcp-docs", () => {
   it("splits llms-full.txt into one page per doc", () => {
-    expect(pages.length).toBeGreaterThanOrEqual(10);
+    expect(pages.length).toBe(readdirSync("site/docs").filter((f) => f.endsWith(".md")).length);
     for (const page of pages) {
       expect(page.title).not.toBe("");
-      expect(page.url.startsWith(`${SITE}/`)).toBe(true);
+      expect(page.url.startsWith(`${SITE}/docs/`)).toBe(true);
       expect(page.body.startsWith(`# ${page.title}`)).toBe(true);
     }
   });
