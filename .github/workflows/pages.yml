@@ -32,7 +32,7 @@ jobs:
           # https://<owner>.github.io/<repo>/ — or "/" with a custom domain
           SITE_BASE: ${{ steps.pages.outputs.base_path }}/
           SITE_URL: ${{ steps.pages.outputs.base_url }}
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site/dist
 
