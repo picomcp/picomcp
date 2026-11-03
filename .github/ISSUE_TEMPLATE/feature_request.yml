@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest a feature or an API change.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        picomcp stays small on purpose. Describing the problem you want to solve helps us find the smallest design that solves it.
+        Please read [What gets merged](https://github.com/picomcp/picomcp/blob/main/CONTRIBUTING.md#what-gets-merged) first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to build, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API
+      description: How you would like the code to look.
+      render: ts
+  - type: input
+    id: spec
+    attributes:
+      label: MCP spec reference
+      description: Link to the relevant section of the specification, if any.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to implement this.

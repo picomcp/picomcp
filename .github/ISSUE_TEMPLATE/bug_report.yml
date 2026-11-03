@@ -1,0 +1,39 @@
+name: Bug report
+description: Something does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. The smaller the reproduction, the faster the fix.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: The smallest server that shows the problem. A failing test is ideal.
+      render: ts
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Client
+      placeholder: Claude Code 2.x, Cursor, MCP Inspector, official SDK…
+  - type: dropdown
+    id: transport
+    attributes:
+      label: Transport
+      options: [stdio, Streamable HTTP, server.fetch, server.handle, server.call]
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: picomcp 0.1.0, Node 24.1 / Bun 1.3 / Deno 2.5, zod 4.1
+    validations:
+      required: true
