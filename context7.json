@@ -1,0 +1,32 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "picomcp",
+  "description": "Zero-dependency TypeScript framework for Model Context Protocol (MCP) servers. Define tools, resources and prompts typed from Zod, Valibot or ArkType schemas, and serve them over stdio or Streamable HTTP on Node, Bun, Deno and Cloudflare Workers. About 4 kB gzipped.",
+  "branch": "main",
+  "folders": ["site/docs", "packages/docs"],
+  "excludeFolders": ["site/i18n", "node_modules", "dist", "site/dist"],
+  "excludeFiles": [
+    "README.de.md",
+    "README.es.md",
+    "README.fr.md",
+    "README.it.md",
+    "README.ja.md",
+    "README.ru.md",
+    "README.zh.md",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "AGENTS.md",
+    "CLAUDE.md"
+  ],
+  "rules": [
+    "Import from \"picomcp\" and define a server with pico({ name }), then chain .tool(), .resource() and .prompt() so server.call() stays type-checked.",
+    "Use Zod 4 schemas with .describe() on every field. Valibot needs toStandardJsonSchema; other libraries need withJsonSchema.",
+    "Throw inside a tool's run function to return an error result with isError: true. Do not return \"Error: ...\" strings.",
+    "In a stdio server, never write to stdout with process.stdout.write. Log with console.error.",
+    "Prompt arguments arrive as strings: use z.coerce.number() for numeric prompt arguments.",
+    "server.fetch ignores the request path: route /mcp to it yourself, or use serve({ http }), which only answers on /mcp.",
+    "Test tools in-process with server.call(name, input) instead of spawning an MCP client."
+  ]
+}
