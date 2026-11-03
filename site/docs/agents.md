@@ -18,6 +18,8 @@ Coding agents write a lot of MCP servers. These docs are built to be read by the
 
 Every page also has a **Copy as Markdown** button, to paste it into a chat.
 
+These files are in English, the reference language and the one models follow best. Each translation also has its own `llms-full.txt`, for example `/fr/llms-full.txt`.
+
 ## Point your agent at the docs
 
 Paste this into your agent's instructions, for example in `AGENTS.md` or `CLAUDE.md` at the root of your project:
@@ -38,14 +40,25 @@ This project builds MCP servers with picomcp.
 
 ## Give your agent a docs server
 
-The docs are also available as an MCP server, built with picomcp. It gives agents a `search_docs` tool and every page as a resource:
+The docs are also available as an MCP server, [`picomcp-docs`](https://www.npmjs.com/package/picomcp-docs), built with picomcp. It gives agents three tools, `list_docs`, `search_docs` and `read_doc`, and every page as a resource.
+
+In Claude Code:
 
 ```sh
-git clone https://github.com/picomcp/picomcp
-claude mcp add picomcp-docs -- node /absolute/path/to/picomcp/examples/docs-server.ts
+claude mcp add picomcp-docs -- npx -y picomcp-docs
 ```
 
-The source is [`examples/docs-server.ts`](https://github.com/picomcp/picomcp/blob/main/examples/docs-server.ts), about 70 lines long.
+In Cursor, Windsurf, Claude Desktop and most other clients, add it to the MCP config file (`.cursor/mcp.json` for Cursor):
+
+```json
+{
+  "mcpServers": {
+    "picomcp-docs": { "command": "npx", "args": ["-y", "picomcp-docs"] }
+  }
+}
+```
+
+The source is in [`packages/docs`](https://github.com/picomcp/picomcp/tree/main/packages/docs), about 100 lines long.
 
 ## Facts agents get wrong
 

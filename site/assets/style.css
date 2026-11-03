@@ -143,6 +143,43 @@ kbd {
   .topbar .wrap, .topnav { gap: 12px; }
   .brand .ver { display: none; }
 }
+@media (max-width: 480px) { .topnav .docs-link { display: none; } }
+
+/* ── Language menu ────────────────────────────────────────────────────── */
+.lang-menu { position: relative; }
+.lang-menu summary { list-style: none; width: auto; padding: 0 10px; gap: 6px; display: flex; align-items: center; }
+.lang-menu summary::-webkit-details-marker { display: none; }
+.lang-code { font: 500 12px/1 var(--mono); letter-spacing: 0.04em; }
+.lang-menu ul {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
+  list-style: none; margin: 0; padding: 6px; min-width: 180px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.lang-menu a { display: block; padding: 9px 12px; color: var(--ink); text-decoration: none; font-size: 15px; }
+.lang-menu a:hover { background: var(--cobalt-soft); color: var(--cobalt); }
+.lang-menu a[aria-current] { color: var(--cobalt); font-weight: 600; }
+.lang-menu a[aria-current]::after { content: " ✓"; }
+
+.translated { margin: 4px 0 0; padding: 10px 14px; border: 1px dashed var(--cobalt); color: var(--ink-2); font-size: 14px; }
+
+/* ── Scripts Archivo does not cover ───────────────────────────────────── */
+:root:lang(ru) {
+  --display: "Roboto Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+:root:lang(zh) {
+  --display: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+:root:lang(ja) {
+  --display: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+:lang(zh) .hero h1, :lang(ja) .hero h1 { font-size: clamp(44px, 7.4vw, 120px); line-height: 1.06; letter-spacing: 0; }
+:lang(zh) .cta h2, :lang(ja) .cta h2 { font-size: clamp(40px, 6vw, 96px); line-height: 1.08; letter-spacing: 0; }
+:lang(zh) .section-head h2, :lang(ja) .section-head h2, :lang(zh) .doc-head h1, :lang(ja) .doc-head h1 { line-height: 1.1; letter-spacing: 0; }
+:lang(zh) .prose, :lang(ja) .prose { line-height: 1.85; }
+:lang(ru) .hero h1, :lang(ru) .cta h2 { line-height: 0.92; }
 @media (max-width: 860px) {
   .topnav a.hide-sm { display: none; }
   .search-btn { min-width: 0; }
@@ -213,8 +250,12 @@ kbd {
 .agents-grid code { font: 600 18px/1.3 var(--mono); color: var(--cobalt); }
 .agents-grid span { color: var(--ink-2); }
 
-.clients .wrap { padding-block: 56px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px 48px; }
-.clients ul { display: flex; flex-wrap: wrap; gap: 12px 40px; margin: 0; padding: 0; list-style: none; font: 800 28px/1.1 var(--display); font-stretch: 70%; text-transform: uppercase; }
+.clients .wrap { padding-block: 56px; display: flex; flex-direction: column; gap: 28px; }
+.clients ul { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px 32px; margin: 0; padding: 0; list-style: none; font: 800 22px/1.1 var(--display); font-stretch: 70%; text-transform: uppercase; }
+.clients li { display: flex; align-items: center; gap: 10px; }
+@media (max-width: 1100px) { .clients ul { justify-content: flex-start; } }
+.clients svg { flex: none; color: var(--ink); }
+.clients li:last-child svg { color: var(--cobalt); }
 
 .cta { background: var(--cobalt); color: var(--on-cobalt); }
 .cta .wrap { padding-block: 96px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 40px; }

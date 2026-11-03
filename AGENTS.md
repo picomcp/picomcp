@@ -33,9 +33,10 @@ Run `npm run check` before you say a task is done. Report its real output.
 | `src/listen.ts` | `serve({ http })` on Bun, Deno or Node |
 | `src/stdio.ts` | `serve()` over stdin/stdout |
 | `src/cli.ts` | `picomcp init`. Node-only, not part of the library bundle |
-| `test/` | `server.test.ts` (unit + types), `interop.test.ts` (official SDK client), `search.test.ts` (docs search) |
+| `test/` | `server.test.ts` (unit + types), `interop.test.ts` (official SDK client), `search.test.ts` (docs search), `docs-package.test.ts` (`picomcp-docs`) |
 | `site/` | Docs generator (`build.ts`), pages (`docs/*.md`), assets, Shiki theme |
 | `examples/` | Runnable servers. Keep them working: they are documentation |
+| `packages/docs/` | `picomcp-docs`, the docs as an MCP server. Published to npm on its own, depends on `picomcp` from npm |
 
 ## Hard rules
 

@@ -12,6 +12,8 @@
   <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-0a0f1f?style=flat-square"></a>
 </p>
 
+<p><a href="README.md"><b>English</b></a> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a> · <a href="README.it.md">Italiano</a> · <a href="README.es.md">Español</a> · <a href="README.ru.md">Русский</a> · <a href="README.zh.md">简体中文</a> · <a href="README.ja.md">日本語</a></p>
+
 **picomcp** is a zero-dependency TypeScript framework for [Model Context Protocol](https://modelcontextprotocol.io) servers. Give any LLM real tools in one file: typed with your schema library, served over stdio or HTTP, running on Node, Bun, Deno and the edge.
 
 ```ts
@@ -130,7 +132,7 @@ The [documentation](https://picomcp.github.io/picomcp/docs/) has typo-tolerant s
 - [`llms.txt`](https://picomcp.github.io/picomcp/llms.txt): an index of every page
 - [`llms-full.txt`](https://picomcp.github.io/picomcp/llms-full.txt): the whole documentation in one file
 - `docs/<page>.md`: any page as Markdown
-- [`examples/docs-server.ts`](examples/docs-server.ts): the docs as an MCP server, built with picomcp
+- [`picomcp-docs`](packages/docs): the docs as an MCP server, built with picomcp. `claude mcp add picomcp-docs -- npx -y picomcp-docs`
 
 ## Scope
 

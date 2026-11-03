@@ -53,6 +53,22 @@ describe("search", () => {
     expect(top("qqqqzzzz")).toEqual([]);
   });
 
+  it.each([
+    ["fr", "anulation", "Annulation"],
+    ["de", "Abruch", "Abbruch"],
+    ["es", "cancelacion", "Cancelación"],
+    ["ru", "отмна", "Отмена"],
+    ["zh", "结构化", "结构化输出"],
+    ["ja", "キャンセル", "キャンセル"],
+  ])("searches the %s docs, typos and all: %s → %s", (lang, query, heading) => {
+    const docs = JSON.parse(readFileSync(`site/dist/${lang}/search.json`, "utf8"));
+    expect(search(createIndex(docs), query, 3).map((r: { doc: { h: string } }) => r.doc.h)).toContain(heading);
+  });
+
+  it("highlights Chinese and Japanese matches inside a run of text", () => {
+    expect(excerpt("用 schema 校验输入参数", new Set(["校验"]))).toBe("用 schema <mark>校验</mark>输入参数");
+  });
+
   it("highlights matched words in excerpts and escapes HTML", () => {
     expect(excerpt("Use <b>tools</b> wisely", new Set(["tools"]))).toBe("Use &#60;b&#62;<mark>tools</mark>&#60;/b&#62; wisely");
   });

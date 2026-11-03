@@ -1,0 +1,45 @@
+{
+  "name": "picomcp-docs",
+  "version": "0.1.0",
+  "description": "The picomcp documentation as an MCP server: lets Claude Code, Cursor and other coding agents search and read the docs while they write your MCP server.",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "picomcp",
+    "documentation",
+    "docs",
+    "claude",
+    "cursor",
+    "ai-agents",
+    "typescript"
+  ],
+  "license": "MIT",
+  "homepage": "https://picomcp.github.io/picomcp/docs/agents",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/picomcp/picomcp.git",
+    "directory": "packages/docs"
+  },
+  "bugs": "https://github.com/picomcp/picomcp/issues",
+  "mcpName": "io.github.picomcp/picomcp-docs",
+  "type": "module",
+  "bin": {
+    "picomcp-docs": "dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsdown --no-config src/cli.ts --format esm --platform node --target node22 --no-dts --minify --clean --external picomcp --external zod",
+    "check:version": "node -e \"const p=require('./package.json'),s=require('./server.json'),v=require('fs').readFileSync('src/server.ts','utf8').match(/VERSION = \\\"(.+?)\\\"/)[1];const all=[p.version,s.version,...s.packages.map(x=>x.version),v];if(new Set(all).size>1){console.error('Version mismatch:',all.join(' '));process.exit(1)}\"",
+    "prepublishOnly": "npm run check:version && npm run build"
+  },
+  "dependencies": {
+    "picomcp": "^0.1.0",
+    "zod": "^4.0.0"
+  }
+}

@@ -4,6 +4,16 @@ All notable changes to picomcp are documented here. The format follows [Keep a C
 
 ## Unreleased
 
+## 0.1.1
+
+No library changes: this release ships documentation.
+
+- Docs and README in 8 languages: English, French, German, Italian, Spanish, Russian, Simplified Chinese and Japanese. Every translated page keeps the English code samples, checked in CI.
+- Docs search handles every script: accents, Cyrillic, and Chinese and Japanese text without spaces.
+- Language menu, `hreflang` links, `sitemap.xml` and a `llms-full.txt` per language.
+- Real client logos on the landing page.
+- New package [`picomcp-docs`](packages/docs): the docs as an MCP server, run with `npx -y picomcp-docs`. Replaces `examples/docs-server.ts`, and adds `list_docs` and `read_doc` tools.
+
 ## 0.1.0
 
 First release.

@@ -15,11 +15,46 @@
 
 const WEIGHT = { heading: 4, page: 2, text: 1 };
 
-/** @param {string} s */
-export const normalize = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+/**
+ * Lower-cases and strips Latin, Greek and Cyrillic accents ("é" → "e", "й" → "и"),
+ * then recomposes, so Japanese voiced kana ("が") stay intact.
+ * @param {string} s
+ */
+export const normalize = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").normalize("NFC");
 
-/** @param {string} s */
-export const words = (s) => normalize(s).match(/[a-z0-9]+/g) ?? [];
+const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー]/u;
+const CJK_RUNS = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー]+|[^\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー]+/gu;
+
+/**
+ * Splits text into searchable terms, in any script. Chinese and Japanese have
+ * no spaces between words, so their runs become single characters plus
+ * overlapping pairs ("资源模板" → 资 源 模 板 资源 源模 模板).
+ * @param {string} s
+ * @returns {string[]}
+ */
+export function words(s) {
+  /** @type {string[]} */
+  const out = [];
+  for (const token of normalize(s).match(/[\p{L}\p{N}]+/gu) ?? []) {
+    if (!CJK.test(token)) {
+      out.push(token);
+      continue;
+    }
+    for (const run of token.match(CJK_RUNS) ?? []) {
+      if (!CJK.test(run)) {
+        out.push(run);
+        continue;
+      }
+      const chars = [...run];
+      out.push(...chars);
+      for (let i = 0; i < chars.length - 1; i++) out.push(chars[i] + chars[i + 1]);
+    }
+  }
+  return out;
+}
+
+/** @param {string} term */
+const isCjk = (term) => CJK.test(term);
 
 /**
  * @param {Doc[]} docs
@@ -69,8 +104,9 @@ export function distance(a, b, max) {
   return prev[b.length];
 }
 
+/** Typos allowed for a query word. Chinese and Japanese terms are one or two characters: exact only. */
 /** @param {string} q */
-const allowedEdits = (q) => (q.length <= 3 ? 0 : q.length <= 6 ? 1 : 2);
+const allowedEdits = (q) => (isCjk(q) || q.length <= 3 ? 0 : q.length <= 6 ? 1 : 2);
 
 /**
  * Scores every vocabulary word against one query word.
@@ -84,7 +120,7 @@ function matchWord(index, q, isLast) {
   for (const term of index.vocab) {
     let score = 0;
     if (term === q) score = 1;
-    else if (isLast && q.length >= 2 && term.startsWith(q)) score = 0.9 - Math.min(0.3, (term.length - q.length) * 0.03);
+    else if (isLast && q.length >= 2 && !isCjk(q) && term.startsWith(q)) score = 0.9 - Math.min(0.3, (term.length - q.length) * 0.03);
     else if (max) {
       const d = distance(q, term, max);
       if (d <= max) score = 0.7 - 0.2 * (d - 1);
@@ -143,23 +179,50 @@ export function search(index, query, limit = 12) {
  * @param {string} text @param {Set<string>} terms @param {number} [size]
  */
 export function excerpt(text, terms, size = 150) {
-  const parts = text.split(/([A-Za-z0-9À-ɏ]+)/);
+  const WORD = /([\p{L}\p{N}]+)/u;
+  const cjkTerms = [...terms].filter(isCjk).sort((a, b) => b.length - a.length);
+  const lower = normalize(text);
+
+  // Start the excerpt a little before the first match.
+  let first = -1;
   let offset = 0;
-  let start = 0;
-  for (const part of parts) {
+  for (const part of text.split(WORD)) {
     if (terms.has(normalize(part))) {
-      start = Math.max(0, offset - 40);
+      first = offset;
       break;
     }
     offset += part.length;
   }
+  for (const term of cjkTerms) {
+    const at = lower.indexOf(term);
+    if (at !== -1 && (first === -1 || at < first)) first = at;
+  }
+  const spaced = !CJK.test(text);
+  const start = Math.max(0, first - (spaced ? 40 : 20));
+
   let slice = text.slice(start, start + size);
-  if (start > 0) slice = `…${slice.replace(/^\S*\s/, "")}`;
-  if (start + size < text.length) slice = `${slice.replace(/\s\S*$/, "")}…`;
-  return slice
-    .split(/([A-Za-z0-9À-ɏ]+)/)
-    .map((part) => (terms.has(normalize(part)) ? `<mark>${escape(part)}</mark>` : escape(part)))
+  if (spaced && start > 0) slice = slice.replace(/^\S*\s/, "");
+  if (spaced && start + size < text.length) slice = slice.replace(/\s\S*$/, "");
+  const prefix = start > 0 ? "…" : "";
+  const suffix = start + size < text.length ? "…" : "";
+
+  const html = slice
+    .split(WORD)
+    .map((part) => {
+      if (terms.has(normalize(part))) return `<mark>${escape(part)}</mark>`;
+      if (!cjkTerms.length || !CJK.test(part)) return escape(part);
+      // Mark Chinese and Japanese matches inside a run, longest terms first.
+      const pattern = new RegExp(cjkTerms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
+      let out = "";
+      let last = 0;
+      for (const m of part.matchAll(pattern)) {
+        out += `${escape(part.slice(last, m.index))}<mark>${escape(m[0])}</mark>`;
+        last = (m.index ?? 0) + m[0].length;
+      }
+      return out + escape(part.slice(last));
+    })
     .join("");
+  return prefix + html + suffix;
 }
 
 /** @param {string} s */

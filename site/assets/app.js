@@ -2,6 +2,16 @@
 import { createIndex, excerpt, search } from "./search.js";
 
 const BASE = document.documentElement.dataset.base ?? "/";
+const SEARCH_INDEX = document.documentElement.dataset.search ?? `${BASE}search.json`;
+/** Interface strings for the page's language, written by the site generator. */
+const T = (() => {
+  const fallback = { loading: "Loading…", noResults: "No results for “{q}”.", tryOther: "Try fewer or different words.", pages: "Pages", copied: "Copied", pressCopy: "Press ⌘C" };
+  try {
+    return { ...fallback, ...JSON.parse(document.getElementById("ui")?.textContent ?? "{}") };
+  } catch {
+    return fallback;
+  }
+})();
 const $ = (/** @type {string} */ s, root = document) => /** @type {HTMLElement | null} */ (root.querySelector(s));
 
 // ── Theme ────────────────────────────────────────────────────────────────
@@ -21,9 +31,9 @@ async function copy(button, text) {
   const label = button.textContent;
   try {
     await navigator.clipboard.writeText(text);
-    button.textContent = "Copied";
+    button.textContent = T.copied;
   } catch {
-    button.textContent = "Press ⌘C";
+    button.textContent = T.pressCopy;
   }
   button.setAttribute("data-done", "");
   setTimeout(() => {
@@ -86,7 +96,7 @@ const ICON_PAGE = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="
 const ICON_HASH = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M7 3 5.5 15M12.5 3 11 15M3.5 7h12M3 11h12" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
 
 function load() {
-  loading ??= fetch(`${BASE}search.json`)
+  loading ??= fetch(SEARCH_INDEX)
     .then((r) => r.json())
     .then((docs) => {
       index = createIndex(docs);
@@ -101,7 +111,7 @@ function render() {
   if (!list || !input) return;
   const query = input.value.trim();
   if (!index) {
-    list.innerHTML = '<li class="cmdk-empty">Loading…</li>';
+    list.innerHTML = `<li class="cmdk-empty">${esc(T.loading)}</li>`;
     return;
   }
   /** @type {{ doc: import("./search.js").Doc, terms: Set<string> }[]} */
@@ -110,7 +120,7 @@ function render() {
     : index.docs.filter((d) => d.h === d.p).map((doc) => ({ doc, terms: new Set() }));
 
   if (!results.length) {
-    list.innerHTML = `<li class="cmdk-empty">No results for “${esc(query)}”.<br>Try fewer or different words.</li>`;
+    list.innerHTML = `<li class="cmdk-empty">${esc(T.noResults).replace("{q}", esc(query))}<br>${esc(T.tryOther)}</li>`;
     return;
   }
 
@@ -118,7 +128,7 @@ function render() {
   let group = "";
   list.innerHTML = results
     .map(({ doc, terms }, i) => {
-      const heading = query ? doc.p : "Pages";
+      const heading = query ? doc.p : T.pages;
       const label = heading !== group ? `<li class="cmdk-group label" role="presentation">${esc((group = heading))}</li>` : "";
       const isPage = doc.h === doc.p;
       const title = query ? excerpt(doc.h, terms, 120) : esc(doc.h);
@@ -207,4 +217,10 @@ document.addEventListener("keydown", (event) => {
       }
     }
   }
+});
+
+// ── Language menu ────────────────────────────────────────────────────────
+document.addEventListener("click", (event) => {
+  const menu = document.querySelector(".lang-menu[open]");
+  if (menu && event.target instanceof Node && !menu.contains(event.target)) menu.removeAttribute("open");
 });

@@ -8,7 +8,7 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import process from "node:process";
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 const HELP = `picomcp ${VERSION}
 
